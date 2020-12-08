@@ -1,4 +1,4 @@
-package com.example.translatorapp.model;
+package com.example.translatorapp.model.repo;
 
 import java.io.IOException;
 

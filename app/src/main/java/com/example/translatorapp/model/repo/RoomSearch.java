@@ -1,4 +1,4 @@
-package com.example.translatorapp.model;
+package com.example.translatorapp.model.repo;
 
 import com.example.translatorapp.model.api.IDataSource;
 import com.example.translatorapp.model.data.SearchResult;

@@ -1,6 +1,6 @@
 package com.example.translatorapp.model.api;
 
-import com.example.translatorapp.model.RoomSearch;
+import com.example.translatorapp.model.repo.RoomSearch;
 import com.example.translatorapp.model.data.SearchResult;
 
 import java.util.List;

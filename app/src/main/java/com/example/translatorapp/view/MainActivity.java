@@ -16,11 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.translatorapp.R;
 import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.data.DataModel;
-import com.example.translatorapp.model.data.SearchResult;
+import com.example.translatorapp.model.data.DataStatus;
 import com.example.translatorapp.presenter.MainPresenter;
 import com.example.translatorapp.view.adapter.ResultAdapter;
-
-import java.util.List;
 
 public class MainActivity<T extends DataModel> extends AppCompatActivity implements IMainView, ILogger {
 
@@ -42,8 +40,8 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
         showVerboseLog(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
         presenter = new MainPresenter<>();
+        init();
         showVerboseLog(TAG, "onCreate - DONE");
     }
 
@@ -53,7 +51,7 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
         initViews();
         initLayouts();
         initListeners();
-//        initAdapter();
+        initAdapter();
         showVerboseLog(TAG, "init - DONE");
     }
 
@@ -95,12 +93,12 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
         });
     }
 
-//    private void initAdapter() {
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-//        adapter = new ResultAdapter(searchResult);
-//        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setAdapter(adapter);
-//    }
+    private void initAdapter() {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        adapter = new ResultAdapter(presenter.getPresenter());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+    }
 
     private void hideKeypad() {
         searchView.clearFocus();
@@ -121,50 +119,35 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
     }
 
     @Override
-    public void renderData(DataModel dataModel) {
-        showVerboseLog(TAG, "renderData");
-        if (dataModel instanceof DataModel.Success) {
-            List<SearchResult> searchResult = ((DataModel.Success) dataModel).getData();
-            if (searchResult == null || searchResult.isEmpty()) {
-                showErrorScreen(getString(R.string.empty_server_response_on_success));
-            } else {
-                showViewSuccess();
-                if (adapter == null) {
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-                    adapter = new ResultAdapter(searchResult);
-                    recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    adapter.setData(searchResult);
-                }
-            }
-        } else if (dataModel instanceof DataModel.Loading) {
+    public void updateData(DataStatus status, Integer progress, String text) {
+        showVerboseLog(TAG, "updateData");
+        if (status == DataStatus.SUCCESS) {
+            showViewSuccess();
+            adapter.notifyDataSetChanged();
+        } else if (status == DataStatus.EMPTY) {
+            showErrorScreen(getString(R.string.empty_server_response_on_success));
+            adapter.notifyDataSetChanged();
+        } else if (status == DataStatus.LOADING) {
             showViewLoading();
             ProgressBar progressBarHorizontal = findViewById(R.id.progress_bar_horizontal);
             ProgressBar progressBarRound = findViewById(R.id.progress_bar_round);
-            if (((DataModel.Loading) dataModel).getProgress() != 0) {
+            if (progress != 0) {
                 progressBarHorizontal.setVisibility(View.VISIBLE);
                 progressBarRound.setVisibility(View.GONE);
-                progressBarHorizontal.setProgress(((DataModel.Loading) dataModel).getProgress());
+                progressBarHorizontal.setProgress(progress);
             } else {
                 progressBarHorizontal.setVisibility(View.GONE);
                 progressBarRound.setVisibility(View.VISIBLE);
             }
-        } else if (dataModel instanceof DataModel.Error) {
-            showErrorScreen(((DataModel.Error) dataModel).getError().getMessage());
+        } else if (status == DataStatus.ERROR) {
+            showErrorScreen(text);
         }
-        showVerboseLog(TAG, "renderData - DONE");
     }
 
-    private void showErrorScreen(String error) {
+    private void showErrorScreen(String errorText) {
         showViewError();
         TextView errorTextView = findViewById(R.id.error_textview);
-        errorTextView.setText((error != null) ? error : getString(R.string.undefined_error));
-
-        Button reloadButton = findViewById(R.id.reload_button);
-        reloadButton.setOnClickListener((view) -> {
-            presenter.onClick("hi", true);
-        });
+        errorTextView.setText((errorText != null) ? errorText : getString(R.string.undefined_error));
     }
 
     private void showViewSuccess() {

@@ -10,16 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.translatorapp.R;
-import com.example.translatorapp.model.data.SearchResult;
+import com.example.translatorapp.logger.ILogger;
+import com.example.translatorapp.presenter.list.IResultListPresenter;
+import com.example.translatorapp.view.item.IResultItemView;
 
-import java.util.List;
+public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder> implements ILogger {
 
-public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder> {
+    private static final String TAG = ResultAdapter.class.getSimpleName();
 
-    private List<SearchResult> data;
+    private final IResultListPresenter presenter;
 
-    public ResultAdapter(List<SearchResult> data) {
-        this.data = data;
+    public ResultAdapter(IResultListPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @NonNull
@@ -33,21 +35,22 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(data.get(position));
+        holder.position = position;
+        holder.itemView.setOnClickListener((view) -> {
+            showVerboseLog(TAG, "itemView [" + position + "] Clicked");
+            presenter.onItemClick(holder);
+        });
+        presenter.bindView(holder);
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
-    }
-
-    public void setData(List<SearchResult> data) {
-        this.data = data;
-        notifyDataSetChanged();
+        return presenter.getCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements IResultItemView {
 
+        int position;
         TextView header;
         TextView description;
 
@@ -59,11 +62,18 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
         }
 
         @Override
-        public void bind(SearchResult data) {
-            if (getLayoutPosition() != RecyclerView.NO_POSITION) {
-                header.setText(data.getText());
-                description.setText(data.getMeanings().get(0).getTranslation().getTranslation());
-            }
+        public void setHeader(String headerText) {
+            header.setText(headerText);
+        }
+
+        @Override
+        public void setDescription(String descriptionText) {
+            description.setText(descriptionText);
+        }
+
+        @Override
+        public int getPos() {
+            return position;
         }
     }
 }

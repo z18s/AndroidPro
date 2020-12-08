@@ -1,8 +1,7 @@
-package com.example.translatorapp.model;
+package com.example.translatorapp.model.repo;
 
 import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.SearchResult;
-import com.example.translatorapp.model.repo.ISearchRepo;
 
 import java.util.List;
 

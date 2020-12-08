@@ -1,6 +1,6 @@
 package com.example.translatorapp.model.api;
 
-import com.example.translatorapp.model.RetrofitSearch;
+import com.example.translatorapp.model.repo.RetrofitSearch;
 import com.example.translatorapp.model.data.SearchResult;
 
 import java.util.List;
