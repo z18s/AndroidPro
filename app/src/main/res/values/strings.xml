@@ -1,3 +1,16 @@
 <resources>
+
+    <!-- App -->
     <string name="app_name">TranslatorApp</string>
+    <string name="test_text">Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+
+    <!-- Search -->
+    <string name="search_main_text">Type a word:</string>
+    <string name="search_button_text">Search</string>
+
+    <!-- Error -->
+    <string name="error_textview_stub">Error</string>
+    <string name="reload_button">Reload</string>
+    <string name="undefined_error">Undefined error</string>
+    <string name="empty_server_response_on_success">Response from server is empty</string>
 </resources>
