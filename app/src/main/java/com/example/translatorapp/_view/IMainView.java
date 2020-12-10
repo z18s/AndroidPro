@@ -1,4 +1,4 @@
-package com.example.translatorapp.view;
+package com.example.translatorapp._view;
 
 import com.example.translatorapp.model.data.DataStatus;
 

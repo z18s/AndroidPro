@@ -1,4 +1,4 @@
-package com.example.translatorapp.presenter;
+package com.example.translatorapp._presenter;
 
 import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.repo.MainInteractor;
@@ -8,8 +8,8 @@ import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.DataStatus;
 import com.example.translatorapp.model.data.SearchResult;
 import com.example.translatorapp.model.repo.SearchRepo;
-import com.example.translatorapp.presenter.list.IResultListPresenter;
-import com.example.translatorapp.view.IMainView;
+import com.example.translatorapp._presenter.list.IResultListPresenter;
+import com.example.translatorapp._view.IMainView;
 import com.example.translatorapp.view.item.IResultItemView;
 
 import java.util.ArrayList;

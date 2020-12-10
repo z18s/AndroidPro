@@ -1,4 +1,4 @@
-package com.example.translatorapp.presenter.list;
+package com.example.translatorapp._presenter.list;
 
 import com.example.translatorapp.view.item.IItemView;
 
