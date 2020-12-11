@@ -4,39 +4,33 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.translatorapp.logger.ILogger;
-import com.example.translatorapp.model.api.DataSourceLocal;
-import com.example.translatorapp.model.api.DataSourceRemove;
 import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.repo.MainInteractor;
-import com.example.translatorapp.model.repo.SearchRepo;
+import com.example.translatorapp.utils.SchedulerProvider;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import javax.inject.Inject;
+
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainViewModel extends BaseViewModel<DataModel> implements ILogger {
 
     private static final String TAG = MainViewModel.class.getSimpleName();
 
-    private DataModel dataModel = null;
+    private DataModel dataModel;
 
-    private MainInteractor interactor = new MainInteractor(
-            new SearchRepo(new DataSourceRemove()),
-            new SearchRepo(new DataSourceLocal())
-    );
-
-    public MainViewModel() {
-        super(new MutableLiveData<DataModel>(), new CompositeDisposable());
+    @Inject
+    public MainViewModel(MainInteractor interactor, SchedulerProvider schedulerProvider) {
+        super(new MutableLiveData<>(), interactor, new CompositeDisposable(), schedulerProvider);
     }
 
     @Override
     public LiveData<DataModel> getData(String word, boolean isOnline) {
         super.compositeDisposable.add(
                 interactor.getData(word, isOnline)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .doOnSubscribe((d) -> liveDataForView.setValue(new DataModel.Loading(0)))
                         .subscribeWith(getDataObserver())
         );

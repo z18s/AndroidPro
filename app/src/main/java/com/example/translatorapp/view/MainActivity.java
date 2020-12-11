@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +21,10 @@ import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.DataStatus;
 import com.example.translatorapp.view.adapter.ResultAdapter;
 import com.example.translatorapp.viewmodel.MainViewModel;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 public class MainActivity extends AppCompatActivity implements ILogger {
 
@@ -37,14 +42,21 @@ public class MainActivity extends AppCompatActivity implements ILogger {
     private FrameLayout loadingLayout;
     private LinearLayout errorLayout;
 
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         showVerboseLog(TAG, "onCreate");
+
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewModel = new MainViewModel();
+
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         observer = this::updateData;
         init();
+
         showVerboseLog(TAG, "onCreate - DONE");
     }
 
