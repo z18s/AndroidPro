@@ -4,10 +4,17 @@ import java.util.List;
 
 public class DataModel {
 
+    DataStatus status;
+
+    public DataStatus getStatus() {
+        return status;
+    }
+
     public static class Success extends DataModel {
         private List<SearchResult> data;
 
         public Success(List<SearchResult> data) {
+            super.status = DataStatus.SUCCESS;
             this.data = data;
         }
 
@@ -24,6 +31,7 @@ public class DataModel {
         private Throwable error;
 
         public Error(Throwable error) {
+            super.status = DataStatus.ERROR;
             this.error = error;
         }
 
@@ -40,6 +48,7 @@ public class DataModel {
         private int progress;
 
         public Loading(int progress) {
+            super.status = DataStatus.LOADING;
             this.progress = progress;
         }
 

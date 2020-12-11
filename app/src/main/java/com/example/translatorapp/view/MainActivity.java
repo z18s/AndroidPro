@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,15 +19,20 @@ import com.example.translatorapp.R;
 import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.DataStatus;
-import com.example.translatorapp.presenter.MainPresenter;
 import com.example.translatorapp.view.adapter.ResultAdapter;
+import com.example.translatorapp.viewmodel.MainViewModel;
 
-public class MainActivity<T extends DataModel> extends AppCompatActivity implements IMainView, ILogger {
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+
+public class MainActivity extends AppCompatActivity implements ILogger {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private MainPresenter<T, IMainView> presenter;
+    private MainViewModel viewModel;
     private ResultAdapter adapter;
+    private Observer<DataModel> observer;
 
     private SearchView searchView;
     private Button button;
@@ -35,17 +42,24 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
     private FrameLayout loadingLayout;
     private LinearLayout errorLayout;
 
+    @Inject
+    ViewModelProvider.Factory viewModelFactory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         showVerboseLog(TAG, "onCreate");
+
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        presenter = new MainPresenter<>();
+
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        observer = this::updateData;
         init();
+
         showVerboseLog(TAG, "onCreate - DONE");
     }
 
-    @Override
     public void init() {
         showVerboseLog(TAG, "init");
         initViews();
@@ -73,7 +87,7 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
             showVerboseLog(TAG, "button.OnClickListener");
             String word = searchView.getQuery().toString();
             hideKeypad();
-            presenter.onClick(word, true);
+            observeData(word);
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -81,7 +95,7 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
             public boolean onQueryTextSubmit(String word) {
                 showVerboseLog(TAG, "searchView.onQueryTextSubmit");
                 hideKeypad();
-                presenter.onClick(word, true);
+                observeData(word);
                 return true;
             }
 
@@ -93,9 +107,13 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
         });
     }
 
+    private void observeData(String word) {
+        viewModel.getData(word, true).observe(this, observer);
+    }
+
     private void initAdapter() {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        adapter = new ResultAdapter(presenter.getPresenter());
+        adapter = new ResultAdapter();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
@@ -104,33 +122,19 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
         searchView.clearFocus();
     }
 
-    @Override
-    protected void onStart() {
-        showVerboseLog(TAG, "onStart");
-        super.onStart();
-        presenter.attachView(this);
-    }
-
-    @Override
-    protected void onStop() {
-        showVerboseLog(TAG, "onStop");
-        super.onStop();
-        presenter.detachView(this);
-    }
-
-    @Override
-    public void updateData(DataStatus status, Integer progress, String text) {
+    public void updateData(DataModel data) {
         showVerboseLog(TAG, "updateData");
+        DataStatus status = data.getStatus();
         if (status == DataStatus.SUCCESS) {
             showViewSuccess();
-            adapter.notifyDataSetChanged();
+            adapter.setData(data);
         } else if (status == DataStatus.EMPTY) {
             showErrorScreen(getString(R.string.empty_server_response_on_success));
-            adapter.notifyDataSetChanged();
         } else if (status == DataStatus.LOADING) {
             showViewLoading();
             ProgressBar progressBarHorizontal = findViewById(R.id.progress_bar_horizontal);
             ProgressBar progressBarRound = findViewById(R.id.progress_bar_round);
+            int progress = ((DataModel.Loading)data).getProgress();
             if (progress != 0) {
                 progressBarHorizontal.setVisibility(View.VISIBLE);
                 progressBarRound.setVisibility(View.GONE);
@@ -140,7 +144,8 @@ public class MainActivity<T extends DataModel> extends AppCompatActivity impleme
                 progressBarRound.setVisibility(View.VISIBLE);
             }
         } else if (status == DataStatus.ERROR) {
-            showErrorScreen(text);
+            String error = ((DataModel.Error)data).getError().getMessage();
+            showErrorScreen(error);
         }
     }
 
