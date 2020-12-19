@@ -35,8 +35,11 @@ public class WordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word);
 
-        setActionbarHomeButtonAsUp();
+        init();
+    }
 
+    private void init() {
+        setActionbarHomeButtonAsUp();
         initViews();
         setData();
     }

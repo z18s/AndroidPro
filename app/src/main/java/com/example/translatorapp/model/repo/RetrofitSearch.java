@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -26,6 +27,17 @@ public class RetrofitSearch implements IDataSource<List<SearchResult>>, ILogger 
     public Observable<List<SearchResult>> getData(String word) {
         showVerboseLog(TAG, "getData");
         return getService(BaseInterceptor.getInstance()).search(word);
+    }
+
+    @Override
+    public Single<List<String>> getHistoryData() {
+        return null;
+    }
+
+    @Override
+    public Completable putData(String word, List<SearchResult> results) {
+        showVerboseLog(TAG, "putData");
+        return null;
     }
 
     private ApiService getService(Interceptor interceptor) {

@@ -6,6 +6,7 @@ import com.example.translatorapp.model.data.SearchResult;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 public class MainInteractor {
 
@@ -20,12 +21,16 @@ public class MainInteractor {
     public Observable<DataModel> getData(String word, boolean isOnline) {
         if (isOnline) {
             return remoteRepository.getData(word).flatMap((searchResults) -> {
-                return Observable.just(new DataModel.Success(searchResults));
+                return Observable.just(new DataModel.Success(searchResults)).concatWith(localRepository.putData(word, searchResults));
             });
         } else {
             return localRepository.getData(word).flatMap((searchResults) -> {
                 return Observable.just(new DataModel.Success(searchResults));
             });
         }
+    }
+
+    public Single<List<String>> getHistoryData() {
+        return localRepository.getHistoryData();
     }
 }

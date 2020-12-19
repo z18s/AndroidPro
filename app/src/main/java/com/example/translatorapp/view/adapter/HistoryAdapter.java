@@ -13,29 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.translatorapp.R;
 import com.example.translatorapp.logger.ILogger;
-import com.example.translatorapp.model.data.DataModel;
-import com.example.translatorapp.model.data.SearchResult;
-import com.example.translatorapp.view.WordActivity;
-import com.example.translatorapp.view.item.IResultItemView;
+import com.example.translatorapp.view.MainActivity;
+import com.example.translatorapp.view.item.IHistoryItemView;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-import static com.example.translatorapp.view.BundleConstants.WORD_EXTRA;
-import static com.example.translatorapp.view.BundleConstants.DESCRIPTION_EXTRA;
-import static com.example.translatorapp.view.BundleConstants.URL_EXTRA;
+import static com.example.translatorapp.view.BundleConstants.HISTORY_EXTRA;
 
-public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder> implements ILogger {
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> implements ILogger {
 
-    private static final String TAG = ResultAdapter.class.getSimpleName();
+    private static final String TAG = HistoryAdapter.class.getSimpleName();
 
-    private List<SearchResult> data;
+    private List<String> list;
 
-    public void setData(DataModel dataModel) {
-        showVerboseLog(TAG, "setData - " + dataModel.getStatus().toString());
-        data = ((DataModel.Success)dataModel).getData();
+    public void setData(List<String> list) {
+        showVerboseLog(TAG, "setData - " + list);
+        this.list = list;
         notifyDataSetChanged();
     }
 
@@ -44,37 +41,35 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View resultView = inflater.inflate(R.layout.item_result, parent, false);
-        return new ViewHolder(resultView);
+        View historyView = inflater.inflate(R.layout.item_history, parent, false);
+        return new ViewHolder(historyView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.position = position;
-        SearchResult searchResult = data.get(position);
+        String word = list.get(position);
 
         holder.itemView.setOnClickListener((view) -> {
             showVerboseLog(TAG, "itemView [" + position + "] Clicked");
-            startActivity(view, searchResult);
+            startActivity(view, word);
         });
 
-        setRecyclerData(holder, searchResult);
+        setRecyclerData(holder, word);
     }
 
-    private void startActivity(View view, SearchResult searchResult) {
-        Intent intent = new Intent(view.getContext(), WordActivity.class);
+    private void startActivity(View view, String word) {
+        Intent intent = new Intent(view.getContext(), MainActivity.class);
         Bundle args = new Bundle();
-        args.putString(WORD_EXTRA, searchResult.getText());
-        args.putString(DESCRIPTION_EXTRA, searchResult.getMeanings().get(0).getTranslation().getTranslation());
-        args.putString(URL_EXTRA, searchResult.getMeanings().get(0).getImageUrl());
+        args.putString(HISTORY_EXTRA, word);
         intent.putExtras(args);
         view.getContext().startActivity(intent);
     }
 
-    private void setRecyclerData(IResultItemView view, SearchResult searchResult) {
+    private void setRecyclerData(IHistoryItemView view, String word) {
         showVerboseLog(TAG, "setRecyclerData");
 
-        searchResult.getTextObservable().subscribe(new Observer<String>() {
+        Observable.just(word).subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
             }
@@ -82,7 +77,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
             @Override
             public void onNext(@io.reactivex.rxjava3.annotations.NonNull String headerText) {
                 view.setHeader(headerText);
-                view.setDescription(searchResult.getMeanings().get(0).getTranslation().getTranslation());
                 showVerboseLog(TAG, "setRecyclerData.onNext - " + headerText);
             }
 
@@ -98,30 +92,23 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.size();
+        return list == null ? 0 : list.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements IResultItemView {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements IHistoryItemView {
 
         int position;
         TextView header;
-        TextView description;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            header = itemView.findViewById(R.id.header_textview_recycler_item);
-            description = itemView.findViewById(R.id.description_textview_recycler_item);
+            header = itemView.findViewById(R.id.header_history_textview_recycler_item);
         }
 
         @Override
         public void setHeader(String headerText) {
             header.setText(headerText);
-        }
-
-        @Override
-        public void setDescription(String descriptionText) {
-            description.setText(descriptionText);
         }
 
         @Override

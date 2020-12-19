@@ -22,11 +22,13 @@ public class MainViewModel extends BaseViewModel<DataModel> implements ILogger {
 
     @Inject
     public MainViewModel(MainInteractor interactor, SchedulerProvider schedulerProvider) {
-        super(new MutableLiveData<>(), interactor, new CompositeDisposable(), schedulerProvider);
+        super(new MutableLiveData<>(), null, interactor, new CompositeDisposable(), schedulerProvider);
+        showVerboseLog(TAG, "new MainViewModel");
     }
 
     @Override
     public LiveData<DataModel> getData(String word, boolean isOnline) {
+        onCleared();
         super.compositeDisposable.add(
                 interactor.getData(word, isOnline)
                         .subscribeOn(schedulerProvider.io())
