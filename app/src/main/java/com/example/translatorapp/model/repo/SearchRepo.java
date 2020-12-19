@@ -8,6 +8,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 public class SearchRepo implements ISearchRepo<List<SearchResult>>, ILogger {
 
@@ -23,5 +24,17 @@ public class SearchRepo implements ISearchRepo<List<SearchResult>>, ILogger {
     public Observable<List<SearchResult>> getData(String word) {
         showVerboseLog(TAG, "getData");
         return dataSource.getData(word);
+    }
+
+    @Override
+    public Single<List<String>> getHistoryData() {
+        showVerboseLog(TAG, "getHistoryData");
+        return dataSource.getHistoryData();
+    }
+
+    @Override
+    public Completable putData(String word, List<SearchResult> results) {
+        showVerboseLog(TAG, "putData");
+        return dataSource.putData(word, results);
     }
 }

@@ -8,6 +8,7 @@ import com.example.translatorapp.di.module.InteractorModule;
 import com.example.translatorapp.di.module.SchedulerModule;
 import com.example.translatorapp.di.module.SourceModule;
 import com.example.translatorapp.di.module.ViewModelModule;
+import com.example.translatorapp.view.HistoryActivity;
 import com.example.translatorapp.view.MainActivity;
 
 import javax.inject.Singleton;
@@ -36,4 +37,5 @@ public interface AppComponent {
     }
 
     void inject(MainActivity mainActivity);
+    void inject(HistoryActivity historyActivity);
 }

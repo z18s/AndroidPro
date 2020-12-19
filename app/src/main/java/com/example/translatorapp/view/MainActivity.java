@@ -1,6 +1,9 @@
 package com.example.translatorapp.view;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -8,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
@@ -26,7 +30,7 @@ import com.example.translatorapp.viewmodel.MainViewModel;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
+import static com.example.translatorapp.view.BundleConstants.HISTORY_EXTRA;
 
 public class MainActivity extends AppCompatActivity implements ILogger {
 
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements ILogger {
         initLayouts();
         initListeners();
         initAdapter();
+        setData();
         showVerboseLog(TAG, "init - DONE");
     }
 
@@ -85,12 +90,16 @@ public class MainActivity extends AppCompatActivity implements ILogger {
         errorLayout = findViewById(R.id.error_linear_layout);
     }
 
+    private boolean isOnline() {
+        return NetworkUtils.isOnline(this);
+    }
+
     private void initListeners() {
         button.setOnClickListener((view) -> {
             showVerboseLog(TAG, "button.OnClickListener");
             String word = searchView.getQuery().toString();
             hideKeypad();
-            observeData(word);
+            observeData(word, isOnline());
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -98,20 +107,19 @@ public class MainActivity extends AppCompatActivity implements ILogger {
             public boolean onQueryTextSubmit(String word) {
                 showVerboseLog(TAG, "searchView.onQueryTextSubmit");
                 hideKeypad();
-                observeData(word);
+                observeData(word, isOnline());
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                showVerboseLog(TAG, "searchView.onQueryTextChange");
                 return false;
             }
         });
     }
 
-    private void observeData(String word) {
-        viewModel.getData(word, true).observe(this, observer);
+    private void observeData(String word, boolean isOnline) {
+        viewModel.getData(word, isOnline).observe(this, observer);
     }
 
     private void initAdapter() {
@@ -119,6 +127,17 @@ public class MainActivity extends AppCompatActivity implements ILogger {
         adapter = new ResultAdapter();
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setData() {
+        if (getIntent().getExtras() != null) {
+            Bundle bundle = getIntent().getExtras();
+            if (bundle.getString(HISTORY_EXTRA) != null) {
+                String word = bundle.getString(HISTORY_EXTRA);
+                bundle.clear();
+                observeData(word, isOnline());
+            }
+        }
     }
 
     private void hideKeypad() {
@@ -149,6 +168,22 @@ public class MainActivity extends AppCompatActivity implements ILogger {
         } else if (status == DataStatus.ERROR) {
             String error = ((DataModel.Error)data).getError().getMessage();
             showErrorScreen(error);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_history, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_history) {
+            startActivity(new Intent(this, HistoryActivity.class));
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 

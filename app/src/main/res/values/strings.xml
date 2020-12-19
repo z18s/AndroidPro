@@ -10,6 +10,7 @@
     <!-- Search -->
     <string name="search_main_text">Type a word:</string>
     <string name="search_button_text">Search</string>
+    <string name="menu_title_history">History</string>
 
     <!-- Error -->
     <string name="error_textview_stub">Error</string>

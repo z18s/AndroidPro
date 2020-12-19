@@ -4,21 +4,22 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.repo.MainInteractor;
 import com.example.translatorapp.utils.ISchedulerProvider;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
-public abstract class BaseViewModel<T extends DataModel> extends ViewModel {
+public abstract class BaseViewModel<T> extends ViewModel {
 
     final MutableLiveData<T> liveDataForView;
+    final MutableLiveData<T> liveHistoryDataForView;
     final MainInteractor interactor;
     final CompositeDisposable compositeDisposable;
     final ISchedulerProvider schedulerProvider;
 
-    public BaseViewModel(MutableLiveData<T> liveDataForView, MainInteractor interactor, CompositeDisposable compositeDisposable, ISchedulerProvider schedulerProvider) {
+    public BaseViewModel(MutableLiveData<T> liveDataForView, MutableLiveData<T> liveHistoryDataForView, MainInteractor interactor, CompositeDisposable compositeDisposable, ISchedulerProvider schedulerProvider) {
         this.liveDataForView = liveDataForView;
+        this.liveHistoryDataForView = liveHistoryDataForView;
         this.interactor = interactor;
         this.compositeDisposable = compositeDisposable;
         this.schedulerProvider = schedulerProvider;
@@ -26,6 +27,10 @@ public abstract class BaseViewModel<T extends DataModel> extends ViewModel {
 
     public LiveData<T> getData(String word, boolean isOnline) {
         return liveDataForView;
+    }
+
+    public LiveData<T> getHistoryData() {
+        return liveHistoryDataForView;
     }
 
     @Override

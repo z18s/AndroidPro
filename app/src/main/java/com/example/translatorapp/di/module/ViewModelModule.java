@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.translatorapp.di.ViewModelFactory;
 import com.example.translatorapp.di.ViewModelKey;
+import com.example.translatorapp.viewmodel.HistoryViewModel;
 import com.example.translatorapp.viewmodel.MainViewModel;
 
 import dagger.Binds;
@@ -21,4 +22,9 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MainViewModel.class)
     abstract ViewModel contributeMainViewModel (MainViewModel mainViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(HistoryViewModel.class)
+    abstract ViewModel contributeHistoryViewModel (HistoryViewModel historyViewModel);
 }
