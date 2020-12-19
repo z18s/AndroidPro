@@ -6,6 +6,7 @@ import com.example.translatorapp.model.repo.ISearchRepo;
 import com.example.translatorapp.model.repo.RetrofitSearch;
 import com.example.translatorapp.model.repo.RoomSearch;
 import com.example.translatorapp.model.repo.SearchRepo;
+import com.example.translatorapp.model.room.Database;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class SourceModule {
     @Provides
     @Singleton
     @Named(SOURCE_LOCAL)
-    IDataSource<List<SearchResult>> provideDataSourceLocal() {
-        return new RoomSearch();
+    IDataSource<List<SearchResult>> provideDataSourceLocal(Database db) {
+        return new RoomSearch(db);
     }
 }

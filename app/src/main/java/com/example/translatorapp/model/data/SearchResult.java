@@ -14,6 +14,11 @@ public class SearchResult {
     @SerializedName("meanings")
     List<Meanings> meanings;
 
+    public SearchResult(String text, List<Meanings> meanings) {
+        this.text = text;
+        this.meanings = meanings;
+    }
+
     public String getText() {
         return text;
     }

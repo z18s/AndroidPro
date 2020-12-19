@@ -2,7 +2,10 @@
 
     <!-- App -->
     <string name="app_name">TranslatorApp</string>
+    <string name="test_header">Header</string>
     <string name="test_text">Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="dialog_title_device_is_offline">No internet connection</string>
+    <string name="dialog_message_device_is_offline">You can not use app without internet connection. Please, check internet connection.</string>
 
     <!-- Search -->
     <string name="search_main_text">Type a word:</string>
@@ -13,4 +16,8 @@
     <string name="reload_button">Reload</string>
     <string name="undefined_error">Undefined error</string>
     <string name="empty_server_response_on_success">Response from server is empty</string>
+
+    <!-- Word -->
+    <string name="image_stub">image</string>
+
 </resources>

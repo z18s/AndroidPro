@@ -1,6 +1,8 @@
 package com.example.translatorapp.view.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,8 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.position = position;
+        SearchResult searchResult = data.get(position);
+
         holder.itemView.setOnClickListener((view) -> {
             showVerboseLog(TAG, "itemView [" + position + "] Clicked");
         });

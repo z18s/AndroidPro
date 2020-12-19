@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.translatorapp.R;
+import com.example.translatorapp.application.TranslatorApp;
 import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.DataStatus;
+import com.example.translatorapp.utils.NetworkUtils;
 import com.example.translatorapp.view.adapter.ResultAdapter;
 import com.example.translatorapp.viewmodel.MainViewModel;
 
@@ -49,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements ILogger {
     protected void onCreate(Bundle savedInstanceState) {
         showVerboseLog(TAG, "onCreate");
 
-        AndroidInjection.inject(this);
+        TranslatorApp.instance.getComponent().inject(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

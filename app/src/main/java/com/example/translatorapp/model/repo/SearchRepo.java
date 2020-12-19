@@ -1,13 +1,17 @@
 package com.example.translatorapp.model.repo;
 
-import com.example.translatorapp.model.data.SearchResult;
+import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.api.IDataSource;
+import com.example.translatorapp.model.data.SearchResult;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 
-public class SearchRepo implements ISearchRepo<List<SearchResult>> {
+public class SearchRepo implements ISearchRepo<List<SearchResult>>, ILogger {
+
+    private static final String TAG = SearchRepo.class.getSimpleName();
 
     private final IDataSource<List<SearchResult>> dataSource;
 
@@ -17,6 +21,7 @@ public class SearchRepo implements ISearchRepo<List<SearchResult>> {
 
     @Override
     public Observable<List<SearchResult>> getData(String word) {
+        showVerboseLog(TAG, "getData");
         return dataSource.getData(word);
     }
 }

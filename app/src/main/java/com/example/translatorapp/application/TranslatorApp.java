@@ -2,31 +2,26 @@ package com.example.translatorapp.application;
 
 import android.app.Application;
 
+import com.example.translatorapp.di.AppComponent;
 import com.example.translatorapp.di.DaggerAppComponent;
 
-import javax.inject.Inject;
+public class TranslatorApp extends Application {
 
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasAndroidInjector;
+    public static TranslatorApp instance;
 
-public class TranslatorApp extends Application implements HasAndroidInjector {
-
-    @Inject
-    DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
+    private AppComponent component;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        DaggerAppComponent
+        instance = this;
+        component = DaggerAppComponent
                 .builder()
                 .application(this)
-                .build()
-                .inject(this);
+                .build();
     }
 
-    @Override
-    public AndroidInjector<Object> androidInjector() {
-        return dispatchingAndroidInjector;
+    public AppComponent getComponent() {
+        return component;
     }
 }

@@ -10,6 +10,11 @@ public class Meanings {
     @SerializedName("imageUrl")
     String imageUrl;
 
+    public Meanings(Translation translation, String imageUrl) {
+        this.translation = translation;
+        this.imageUrl = imageUrl;
+    }
+
     public Translation getTranslation() {
         return translation;
     }
