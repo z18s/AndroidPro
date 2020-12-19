@@ -15,12 +15,17 @@ import com.example.translatorapp.R;
 import com.example.translatorapp.logger.ILogger;
 import com.example.translatorapp.model.data.DataModel;
 import com.example.translatorapp.model.data.SearchResult;
+import com.example.translatorapp.view.WordActivity;
 import com.example.translatorapp.view.item.IResultItemView;
 
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.disposables.Disposable;
+
+import static com.example.translatorapp.view.BundleConstants.WORD_EXTRA;
+import static com.example.translatorapp.view.BundleConstants.DESCRIPTION_EXTRA;
+import static com.example.translatorapp.view.BundleConstants.URL_EXTRA;
 
 public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder> implements ILogger {
 
@@ -50,9 +55,20 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ViewHolder
 
         holder.itemView.setOnClickListener((view) -> {
             showVerboseLog(TAG, "itemView [" + position + "] Clicked");
+            startActivity(view, searchResult);
         });
-        SearchResult searchResult = data.get(position);
+
         setRecyclerData(holder, searchResult);
+    }
+
+    private void startActivity(View view, SearchResult searchResult) {
+        Intent intent = new Intent(view.getContext(), WordActivity.class);
+        Bundle args = new Bundle();
+        args.putString(WORD_EXTRA, searchResult.getText());
+        args.putString(DESCRIPTION_EXTRA, searchResult.getMeanings().get(0).getTranslation().getTranslation());
+        args.putString(URL_EXTRA, searchResult.getMeanings().get(0).getImageUrl());
+        intent.putExtras(args);
+        view.getContext().startActivity(intent);
     }
 
     private void setRecyclerData(IResultItemView view, SearchResult searchResult) {
